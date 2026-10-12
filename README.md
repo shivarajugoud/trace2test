@@ -56,6 +56,29 @@ node src/cli.js report --candidates .trace2test/candidates.json --stability .tra
 | `export` | Produce a reviewable Promptfoo YAML file. |
 | `report` | Create a Markdown report for a pull request or incident review. |
 
+## Try the complete failure-to-fix loop
+
+This repository includes a small support-answer bot with a real business rule: a customer who cancels an annual plan within 30 days gets a full refund. The `broken` build omits that policy; the `fixed` build includes it. No model key is needed, so you can follow the whole product loop locally.
+
+```bash
+# 1. See the application-level regression fail on purpose (exit code 1).
+npm run demo:broken
+
+# 2. Capture the failed response as a production-style trace.
+npm run demo:record
+
+# 3. Use Trace2Test to mine the trace into a regression candidate.
+npm run demo:mine
+
+# 4. Run the corrected implementation against the same rubric.
+npm run demo:fix
+
+# Or print the entire lifecycle, including Promptfoo-ready output.
+npm run demo:walkthrough
+```
+
+The important distinction is deliberate: `demo:broken` tests the product and fails; the repository test suite proves that Trace2Test *detects* that failure and that the corrected response passes the exact same rubric.
+
 ## Supported input shape
 
 The normalizer accepts an array, a `{ "data": [...] }` wrapper, or a `{ "traces": [...] }` wrapper. It maps common fields such as `input`, `output`, `response`, `feedback`, `scores`, `error`, `latencyMs`, and `costUsd`.

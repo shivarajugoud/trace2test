@@ -1,4 +1,5 @@
 node_modules/
 .trace2test/
+.serena/
 coverage/
 *.generated.yaml
