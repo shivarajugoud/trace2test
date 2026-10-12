@@ -1,0 +1,11 @@
+{
+  "name": "trace2test",
+  "version": "0.1.0",
+  "description": "Turn production LLM failures into portable regression tests.",
+  "type": "module",
+  "bin": { "trace2test": "./src/cli.js" },
+  "scripts": { "test": "node --test", "lint": "node --check src/core.js && node --check src/cli.js" },
+  "keywords": ["llm", "evals", "regression-testing", "promptfoo", "langfuse", "observability"],
+  "license": "MIT",
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,7 @@
+[
+  {"testId":"t2t-abc","passed":true,"score":0.9},
+  {"testId":"t2t-abc","passed":false,"score":0.2},
+  {"testId":"t2t-abc","passed":true,"score":0.8},
+  {"testId":"t2t-def","passed":true,"score":0.95},
+  {"testId":"t2t-def","passed":true,"score":0.91}
+]

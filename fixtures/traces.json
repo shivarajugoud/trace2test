@@ -1,0 +1,5 @@
+[
+  {"id":"trace-101","input":"What is the cancellation policy?","output":"It is probably flexible.","feedback":-1,"latencyMs":420,"costUsd":0.0021,"metadata":{"source":"support"}},
+  {"id":"trace-102","input":"Summarize the exception process.","error":"upstream timeout","latencyMs":10000,"costUsd":0.0004,"metadata":{"source":"support"}},
+  {"id":"trace-103","input":"Where is the onboarding guide?","output":"The guide is in the internal handbook.","feedback":1,"latencyMs":380,"costUsd":0.0018}
+]

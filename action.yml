@@ -1,0 +1,18 @@
+name: Trace2Test
+description: Mine LLM failures into regression candidates and emit a PR-friendly report.
+inputs:
+  traces:
+    description: Path to a trace export in the Trace2Test normalized format.
+    required: true
+  threshold:
+    description: Feedback score below which a trace becomes a candidate.
+    required: false
+    default: '0.5'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        node "$GITHUB_ACTION_PATH/src/cli.js" mine --input "${{ inputs.traces }}" --threshold "${{ inputs.threshold }}" --out .trace2test/candidates.json
+        node "$GITHUB_ACTION_PATH/src/cli.js" export --input .trace2test/candidates.json --format promptfoo --out promptfooconfig.generated.yaml
+        node "$GITHUB_ACTION_PATH/src/cli.js" report --candidates .trace2test/candidates.json --out trace2test-report.md

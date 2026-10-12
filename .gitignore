@@ -1,0 +1,4 @@
+node_modules/
+.trace2test/
+coverage/
+*.generated.yaml
