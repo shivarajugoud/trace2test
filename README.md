@@ -167,7 +167,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: shivarajugoud/trace2test@v0.2.0
+      - uses: shivarajugoud/trace2test@v0.2.1
         with:
           cases: trace2test.cases.json
           base-url: ${{ secrets.TRACE2TEST_BASE_URL }}

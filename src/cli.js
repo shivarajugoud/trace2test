@@ -33,7 +33,7 @@ try {
     const files = {
       'trace2test.config.json': { baseUrl: 'http://localhost:3000', repeats: 3, passThreshold: 1, redaction: { enabled: true, fields: ['email', 'phone', 'authorization', 'apiKey'] } },
       'trace2test.cases.json': { cases: [] },
-      '.github/workflows/trace2test.yml': `name: Trace2Test\non:\n  pull_request:\n  workflow_dispatch:\njobs:\n  regression:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - uses: shivarajugoud/trace2test@v0.2.0\n        with:\n          cases: trace2test.cases.json\n          base-url: \${{ secrets.TRACE2TEST_BASE_URL }}\n          repeats: '3'\n`,
+      '.github/workflows/trace2test.yml': `name: Trace2Test\non:\n  pull_request:\n  workflow_dispatch:\njobs:\n  regression:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - uses: shivarajugoud/trace2test@v0.2.1\n        with:\n          cases: trace2test.cases.json\n          base-url: \${{ secrets.TRACE2TEST_BASE_URL }}\n          repeats: '3'\n`,
     };
     const results = await Promise.all(Object.entries(files).map(async ([path, value]) => ({ path, created: await writeNew(path, value, options.force) })));
     for (const result of results) console.log(`${result.created ? 'Created' : 'Kept existing'} ${result.path}`);

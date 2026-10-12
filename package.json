@@ -1,6 +1,6 @@
 {
   "name": "trace2test",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Turn production LLM failures into portable regression tests.",
   "type": "module",
   "bin": { "trace2test": "./src/cli.js" },

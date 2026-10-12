@@ -1,5 +1,8 @@
 name: Trace2Test
 description: Mine LLM failures or replay approved regression cases, with flaky-aware results for CI.
+branding:
+  icon: activity
+  color: purple
 inputs:
   traces:
     description: Path to a trace export in the Trace2Test normalized format.

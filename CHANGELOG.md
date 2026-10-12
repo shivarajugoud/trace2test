@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1 — Marketplace metadata
+
+- Add GitHub Marketplace badge branding for the Trace2Test Action.
+
 ## v0.2.0 — HTTP regression runner
 
 - Replay human-approved HTTP cases with deterministic response assertions.
