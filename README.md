@@ -29,7 +29,7 @@ Promptfoo-ready tests + Markdown report
 Requires Node.js 20+.
 
 ```bash
-git clone https://github.com/YOUR_ORG/trace2test.git
+git clone https://github.com/shivarajugoud/trace2test.git
 cd trace2test
 npm test
 
@@ -76,7 +76,7 @@ The normalizer accepts an array, a `{ "data": [...] }` wrapper, or a `{ "traces"
 Use the repository as an action after publishing it:
 
 ```yaml
-- uses: your-org/trace2test@v0
+      - uses: shivarajugoud/trace2test@main
   with:
     traces: exports/latest-traces.json
     threshold: "0.5"
