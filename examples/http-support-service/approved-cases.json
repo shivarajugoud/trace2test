@@ -1,0 +1,14 @@
+[
+  {
+    "id": "cancellation-refund-policy",
+    "title": "10-day cancellation receives a full refund",
+    "approved": true,
+    "request": { "method": "GET", "path": "/answer" },
+    "assertions": [
+      { "type": "status", "equals": 200 },
+      { "type": "json-path", "path": "answer", "contains": "30 days" },
+      { "type": "json-path", "path": "answer", "contains": "full refund" },
+      { "type": "json-path", "path": "answer", "contains": "After 30 days" }
+    ]
+  }
+]

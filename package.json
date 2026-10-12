@@ -6,12 +6,13 @@
   "bin": { "trace2test": "./src/cli.js" },
   "scripts": {
     "test": "node --test",
-    "lint": "node --check src/core.js && node --check src/cli.js && node --check examples/support-answer-bot/*.js",
+    "lint": "node --check src/*.js && node --check examples/support-answer-bot/*.js && node --check examples/http-support-service/*.js",
     "demo:broken": "node examples/support-answer-bot/run.js --mode broken --assert",
     "demo:record": "node examples/support-answer-bot/run.js --mode broken --out .trace2test/demo/broken-traces.json",
     "demo:mine": "node src/cli.js mine --input .trace2test/demo/broken-traces.json --out .trace2test/demo/candidates.json",
     "demo:fix": "node examples/support-answer-bot/run.js --mode fixed --assert --out .trace2test/demo/fixed-traces.json",
-    "demo:walkthrough": "node examples/support-answer-bot/walkthrough.js"
+    "demo:walkthrough": "node examples/support-answer-bot/walkthrough.js",
+    "demo:http": "node examples/http-support-service/demo.js"
   },
   "keywords": ["llm", "evals", "regression-testing", "promptfoo", "langfuse", "observability"],
   "license": "MIT",

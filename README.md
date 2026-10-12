@@ -79,6 +79,38 @@ npm run demo:walkthrough
 
 The important distinction is deliberate: `demo:broken` tests the product and fails; the repository test suite proves that Trace2Test *detects* that failure and that the corrected response passes the exact same rubric.
 
+## Replay approved cases against a real HTTP service
+
+Once a mined candidate has an owner-confirmed expected behavior, keep it as an approved case and replay it in CI. The runner uses Node's built-in `fetch`; it does not send data to a Trace2Test service.
+
+```bash
+# Runs the included HTTP service over a real localhost socket.
+# It prints STABLE_FAIL for the intentionally broken build, then STABLE_PASS after the fix.
+npm run demo:http
+
+# In your own project, start your app, then run approved cases against it.
+node src/cli.js run \
+  --input examples/http-support-service/approved-cases.json \
+  --base-url http://localhost:3000 \
+  --repeats 3
+```
+
+An approved case is explicit about the HTTP call and assertions:
+
+```json
+{
+  "id": "cancellation-refund-policy",
+  "approved": true,
+  "request": { "method": "GET", "path": "/answer" },
+  "assertions": [
+    { "type": "status", "equals": 200 },
+    { "type": "json-path", "path": "answer", "contains": "30 days" }
+  ]
+}
+```
+
+`run` exits non-zero only for a stable failure or execution error. A mixed result is reported as `flaky` for investigation instead of becoming an accidental release block.
+
 ## Supported input shape
 
 The normalizer accepts an array, a `{ "data": [...] }` wrapper, or a `{ "traces": [...] }` wrapper. It maps common fields such as `input`, `output`, `response`, `feedback`, `scores`, `error`, `latencyMs`, and `costUsd`.
