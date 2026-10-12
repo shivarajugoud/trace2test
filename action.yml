@@ -1,9 +1,22 @@
 name: Trace2Test
-description: Mine LLM failures into regression candidates and emit a PR-friendly report.
+description: Mine LLM failures or replay approved regression cases, with flaky-aware results for CI.
 inputs:
   traces:
     description: Path to a trace export in the Trace2Test normalized format.
-    required: true
+    required: false
+    default: ''
+  cases:
+    description: Path to reviewed Trace2Test approved cases.
+    required: false
+    default: ''
+  base-url:
+    description: Base URL for replaying approved HTTP cases.
+    required: false
+    default: ''
+  repeats:
+    description: Number of repeat runs for each approved case.
+    required: false
+    default: '3'
   threshold:
     description: Feedback score below which a trace becomes a candidate.
     required: false
@@ -12,7 +25,11 @@ runs:
   using: composite
   steps:
     - shell: bash
+      if: ${{ inputs.traces != '' }}
       run: |
         node "$GITHUB_ACTION_PATH/src/cli.js" mine --input "${{ inputs.traces }}" --threshold "${{ inputs.threshold }}" --out .trace2test/candidates.json
         node "$GITHUB_ACTION_PATH/src/cli.js" export --input .trace2test/candidates.json --format promptfoo --out promptfooconfig.generated.yaml
         node "$GITHUB_ACTION_PATH/src/cli.js" report --candidates .trace2test/candidates.json --out trace2test-report.md
+    - shell: bash
+      if: ${{ inputs.cases != '' }}
+      run: node "$GITHUB_ACTION_PATH/src/cli.js" run --input "${{ inputs.cases }}" --base-url "${{ inputs.base-url }}" --repeats "${{ inputs.repeats }}" --out .trace2test/run.json

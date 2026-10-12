@@ -1,5 +1,7 @@
 # Trace2Test
 
+![Trace2Test banner](assets/trace2test-banner.svg)
+
 **Promote production LLM failures into reviewable regression tests.**
 
 LLM teams collect traces, evaluator scores, and user corrections, but too often the feedback loop ends in a dashboard. Trace2Test is a provider-neutral CLI that finds failed or low-scored production traces, turns them into regression candidates, measures repeatability, and exports a reviewable Promptfoo configuration.
@@ -45,6 +47,30 @@ node src/cli.js export --input .trace2test/candidates.json --format promptfoo
 # Write a shareable report.
 node src/cli.js report --candidates .trace2test/candidates.json --stability .trace2test/stability.json
 ```
+
+## Adopt it in five minutes
+
+Clone Trace2Test once, then run this from the repository you want to protect:
+
+```bash
+git clone https://github.com/shivarajugoud/trace2test.git
+node /path/to/trace2test/src/cli.js init
+```
+
+It safely creates a config file, an empty approved-case catalog, and a GitHub Actions workflow without overwriting existing files. Then capture a production failure, mine it, and require a human to declare the expected behavior:
+
+```bash
+node /path/to/trace2test/src/cli.js mine --input traces.json --out .trace2test/candidates.json
+node /path/to/trace2test/src/cli.js approve \
+  --input .trace2test/candidates.json \
+  --id t2t-abc123 \
+  --path /answer \
+  --method POST \
+  --body '{"question":"{{input}}"}' \
+  --contains "30 days"
+```
+
+`approve` deliberately requires `--contains`: a human owns the desired behavior. Trace2Test records the failing input as `{{input}}`, injects it into the HTTP request, and never promotes a model’s earlier output as the expected answer.
 
 ## Commands
 
@@ -131,10 +157,21 @@ The normalizer accepts an array, a `{ "data": [...] }` wrapper, or a `{ "traces"
 Use the repository as an action after publishing it:
 
 ```yaml
-      - uses: shivarajugoud/trace2test@main
-  with:
-    traces: exports/latest-traces.json
-    threshold: "0.5"
+name: Trace2Test
+on: [pull_request]
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: shivarajugoud/trace2test@v0.2.0
+        with:
+          cases: trace2test.cases.json
+          base-url: ${{ secrets.TRACE2TEST_BASE_URL }}
+          repeats: "3"
 ```
 
 The action writes these review artifacts:
@@ -142,6 +179,7 @@ The action writes these review artifacts:
 - `.trace2test/candidates.json`
 - `promptfooconfig.generated.yaml`
 - `trace2test-report.md`
+- `.trace2test/run.json`
 
 ## Principles
 
@@ -165,3 +203,5 @@ npm test
 ```
 
 Contributions are welcome. Start with a failing fixture and test; keep provider-specific code behind a small adapter.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor workflow and first contribution ideas.

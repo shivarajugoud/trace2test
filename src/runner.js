@@ -10,6 +10,13 @@ function responseText(body) {
   return typeof body === 'string' ? body : JSON.stringify(body);
 }
 
+function applyVars(value, vars) {
+  if (typeof value === 'string') return value.replace(/{{\s*([\w.-]+)\s*}}/g, (_, key) => String(vars[key] ?? ''));
+  if (Array.isArray(value)) return value.map((item) => applyVars(item, vars));
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, applyVars(item, vars)]));
+  return value;
+}
+
 function evaluateAssertions({ status, body }, assertions) {
   const failures = [];
   const text = responseText(body);
@@ -34,10 +41,11 @@ function endpointFor(testCase, baseUrl) {
 
 async function replayOnce(testCase, { baseUrl, fetchImpl, timeoutMs }) {
   const startedAt = performance.now();
+  let timer;
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    const request = testCase.request || {};
+    timer = setTimeout(() => controller.abort(), timeoutMs);
+    const request = applyVars(testCase.request || {}, testCase.vars || {});
     const headers = { ...(request.headers || {}) };
     const init = { method: request.method || 'GET', headers, signal: controller.signal };
     if (request.body !== undefined) {
@@ -45,7 +53,6 @@ async function replayOnce(testCase, { baseUrl, fetchImpl, timeoutMs }) {
       if (!headers['content-type']) headers['content-type'] = 'application/json';
     }
     const response = await fetchImpl(endpointFor(testCase, baseUrl), init);
-    clearTimeout(timer);
     const raw = await response.text();
     let body = raw;
     try { body = raw ? JSON.parse(raw) : null; } catch { /* text response */ }
@@ -53,6 +60,8 @@ async function replayOnce(testCase, { baseUrl, fetchImpl, timeoutMs }) {
     return { passed: failures.length === 0, score: failures.length === 0 ? 1 : 0, status: response.status, latencyMs: Math.round(performance.now() - startedAt), failures };
   } catch (error) {
     return { passed: false, score: 0, latencyMs: Math.round(performance.now() - startedAt), error: error.name === 'AbortError' ? `timed out after ${timeoutMs}ms` : error.message, failures: [] };
+  } finally {
+    clearTimeout(timer);
   }
 }
 

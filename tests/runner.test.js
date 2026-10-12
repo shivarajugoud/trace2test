@@ -42,3 +42,18 @@ test('the CLI reports a passing approved HTTP case', async () => {
     assert.match(stdout, /STABLE_PASS cancellation-refund-policy: 2\/2 runs passed/);
   });
 });
+
+test('interpolates approved-case variables into an HTTP request body', async () => {
+  let receivedBody;
+  const fetchImpl = async (_, init) => {
+    receivedBody = JSON.parse(init.body);
+    return { status: 200, text: async () => JSON.stringify({ answer: 'ok' }) };
+  };
+  const [result] = (await runApprovedCases([{
+    id: 'templated-request', approved: true, vars: { input: 'refund policy' },
+    request: { method: 'POST', path: '/answer', body: { question: '{{input}}' } },
+    assertions: [{ type: 'status', equals: 200 }, { type: 'json-path', path: 'answer', equals: 'ok' }],
+  }], { baseUrl: 'https://example.test', fetchImpl, repeats: 1 })).results;
+  assert.equal(receivedBody.question, 'refund policy');
+  assert.equal(result.runs[0].passed, true);
+});
